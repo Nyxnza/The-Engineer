@@ -26,3 +26,17 @@ function getWarns(userId) {
 }
 
 module.exports = { addWarn, getWarns };
+
+function removeWarn(userId, index) {
+  const data = load();
+
+  if (!data[userId]) return false;
+  if (!data[userId][index]) return false;
+
+  data[userId].splice(index, 1);
+  save(data);
+
+  return true;
+}
+
+module.exports = { addWarn, getWarns, removeWarn };
