@@ -65,6 +65,14 @@ async function requestBan(interaction, member) {
       try {
         await guild.members.ban(targetUser.id, { reason: `Ban approved by ${approvals.size} moderators.` });
 
+          const { sendLog } = require('./logger');
+          await sendLog(guild, {
+            action: 'BAN',
+            target: targetUser,
+            moderator: interaction.user,
+            reason: `Approved by ${approvals.size} moderators`
+          });
+
         await msg.edit({
           embeds: [
             new EmbedBuilder()

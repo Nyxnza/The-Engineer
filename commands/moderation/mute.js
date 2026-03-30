@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { sendLog } = require('../../utils/logger');
 const config = require('../../config.json');
 
 module.exports = {
@@ -22,12 +23,24 @@ module.exports = {
     if (!role) return interaction.reply({ content: "Muted role not found.", ephemeral: true });
 
     await member.roles.add(role);
-
     await interaction.reply(`<@${member.id}> has been muted for **${duration} minute(s)**. Reason: ${reason}`);
 
-    // Auto unmute after duration
+    await sendLog(interaction.guild, {
+      action: 'MUTE',
+      target: member,
+      moderator: interaction.member,
+      reason,
+      duration
+    });
+
     setTimeout(async () => {
       await member.roles.remove(role);
+      await sendLog(interaction.guild, {
+        action: 'UNMUTE',
+        target: member,
+        moderator: { id: interaction.client.user.id },
+        reason: 'Mute duration expired'
+      });
     }, duration * 60 * 1000);
   }
 };
