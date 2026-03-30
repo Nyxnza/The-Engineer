@@ -1,4 +1,5 @@
 {
-  "approverRoles": ["1487473400078405864", "1487766729965703208", "1484193148531114085"],
-  "mutedRoleName": "Killed"
+  "approverRoles": ["1487473400078405864", "1487766729965703208", "YOUR_THIRD_ROLE_ID_HERE"],
+  "mutedRoleName": "Killed",
+  "logChannelName": "mod-logs"
 }
