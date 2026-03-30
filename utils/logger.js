@@ -3,7 +3,12 @@ const config = require('../config.json');
 
 async function sendLog(guild, { action, target, moderator, reason, duration }) {
   const logChannel = guild.channels.cache.find(c => c.name === config.logChannelName);
-  if (!logChannel) return;
+  
+  if (!logChannel) {
+    console.log(`[LOG ERROR] Could not find channel: "${config.logChannelName}"`);
+    console.log(`[LOG ERROR] Available channels: ${guild.channels.cache.map(c => c.name).join(', ')}`);
+    return;
+  }
 
   const colors = {
     BAN: 'Red',
