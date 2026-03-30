@@ -2,12 +2,33 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const { sendLog } = require('../../utils/logger');
 const config = require('../../config.json');
 
+// 🧠 Time parser
+function parseDuration(input) {
+  const match = input.match(/^(\d+)(s|m|h)$/i);
+  if (!match) return null;
+
+  const value = parseInt(match[1]);
+  const unit = match[2].toLowerCase();
+
+  if (unit === 's') return value * 1000;
+  if (unit === 'm') return value * 60 * 1000;
+  if (unit === 'h') return value * 60 * 60 * 1000;
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('slime')
     .setDescription('Slime a user')
-    .addUserOption(opt => opt.setName('user').setDescription('User to slime').setRequired(true))
-    .addIntegerOption(opt => opt.setName('duration').setDescription('Duration in minutes').setRequired(true))
+    .addUserOption(opt =>
+    opt.setName('user')
+    .setDescription('User to slime') // ✅ REQUIRED
+    .setRequired(true)
+)
+    .addStringOption(opt =>
+      opt.setName('duration')
+        .setDescription('Example: 10s, 5m, 2h')
+        .setRequired(true)
+    )
     .addStringOption(opt => opt.setName('reason').setDescription('Reason')),
 
   async execute(interaction) {
@@ -16,11 +37,16 @@ module.exports = {
     }
 
     const member = interaction.options.getMember('user');
-    const duration = interaction.options.getInteger('duration');
+    const durationInput = interaction.options.getString('duration');
     const reason = interaction.options.getString('reason') || 'No reason provided';
 
+    const durationMs = parseDuration(durationInput);
+    if (!durationMs) {
+      return interaction.reply({ content: "❌ Invalid format. Use 10s, 5m, 2h", ephemeral: true });
+    }
+
     const role = interaction.guild.roles.cache.find(r => r.name === config.mutedRoleName);
-    if (!role) return interaction.reply({ content: "Muted role not found.", ephemeral: true });
+    if (!role) return interaction.reply({ content: "Role not found.", ephemeral: true });
 
     await member.roles.add(role);
 
@@ -31,7 +57,7 @@ module.exports = {
       target: member,
       moderator: interaction.member,
       reason,
-      duration
+      duration: durationInput
     });
 
     setTimeout(async () => {
@@ -43,12 +69,12 @@ module.exports = {
         moderator: { id: interaction.client.user.id },
         reason: 'Slime duration expired'
       });
-    }, duration * 60 * 1000);
+    }, durationMs);
   },
 
   async executePrefix(message, args) {
     if (!args[0] || args[0] === 'help') {
-      return message.reply('📖 **Syntax:** `!slime @user <duration> [reason]`');
+      return message.reply('📖 **Syntax:** `!slime @user <duration> [reason]`\nExample: `!slime @John 10m Spamming`');
     }
 
     if (!message.member.permissions.has(PermissionFlagsBits.ModerateMembers)) {
@@ -56,15 +82,19 @@ module.exports = {
     }
 
     const member = message.mentions.members.first();
-    if (!member) return message.reply('Mention a user.');
+    if (!member) return message.reply('❌ Mention a user.');
 
-    const duration = parseInt(args[1]);
-    if (!duration) return message.reply('Provide duration.');
+    const durationInput = args[1];
+    const durationMs = parseDuration(durationInput);
+
+    if (!durationMs) {
+      return message.reply('❌ Invalid format. Use 10s, 5m, 2h');
+    }
 
     const reason = args.slice(2).join(' ') || 'No reason provided';
 
     const role = message.guild.roles.cache.find(r => r.name === config.mutedRoleName);
-    if (!role) return message.reply('Muted role not found.');
+    if (!role) return message.reply('Role not found.');
 
     await member.roles.add(role);
 
@@ -75,7 +105,7 @@ module.exports = {
       target: member,
       moderator: message.member,
       reason,
-      duration
+      duration: durationInput
     });
 
     setTimeout(async () => {
@@ -87,6 +117,6 @@ module.exports = {
         moderator: { id: message.client.user.id },
         reason: 'Slime duration expired'
       });
-    }, duration * 60 * 1000);
+    }, durationMs);
   }
 };
