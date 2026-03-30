@@ -13,13 +13,10 @@ module.exports = {
     if (!interaction.member.permissions.has(PermissionFlagsBits.KickMembers)) {
       return interaction.reply({ content: "No permission", ephemeral: true });
     }
-
     const user = interaction.options.getUser('user');
     const reason = interaction.options.getString('reason') || 'No reason provided';
-
     db.addWarn(user.id, reason);
     await interaction.reply(`<@${user.id}> has been warned. Reason: ${reason}`);
-
     await sendLog(interaction.guild, {
       action: 'WARN',
       target: user,
@@ -29,18 +26,17 @@ module.exports = {
   },
 
   async executePrefix(message, args) {
+    if (!args[0] || args[0] === 'help') {
+      return message.reply('📖 **Syntax:** `!warn @user [reason]`\n**Example:** `!warn @John Toxic behavior`');
+    }
     if (!message.member.permissions.has(PermissionFlagsBits.KickMembers)) {
       return message.reply('No permission.');
     }
-
     const user = message.mentions.users.first();
-    if (!user) return message.reply('Please mention a user to warn.');
-
+    if (!user) return message.reply('❌ Please mention a user to warn.\n📖 **Syntax:** `!warn @user [reason]`');
     const reason = args.slice(1).join(' ') || 'No reason provided';
-
     db.addWarn(user.id, reason);
     await message.reply(`<@${user.id}> has been warned. Reason: ${reason}`);
-
     await sendLog(message.guild, {
       action: 'WARN',
       target: user,

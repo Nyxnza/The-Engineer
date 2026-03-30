@@ -15,9 +15,9 @@ async function sendLog(guild, { action, target, moderator, reason, duration }) {
     KICK: 'Orange',
     MUTE: 'Yellow',
     WARN: 'Blue',
-    UNMUTE: 'Green'
-  };
-
+    UNMUTE: 'Green',
+    PURGE: 'Purple'
+};
   const embed = new EmbedBuilder()
     .setTitle(`🔨 ${action}`)
     .addFields(

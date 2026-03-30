@@ -1,18 +1,11 @@
 const { SlashCommandBuilder } = require('discord.js');
 
 const responses = [
-  '✅ Yes, definitely!',
-  '✅ It is certain.',
-  '✅ Without a doubt.',
-  '✅ Most likely.',
-  '✅ Signs point to yes.',
-  '❓ Ask again later.',
-  '❓ Cannot predict now.',
-  '❓ Better not tell you now.',
-  '❌ Don\'t count on it.',
-  '❌ My sources say no.',
-  '❌ Very doubtful.',
-  '❌ Outlook not so good.'
+  '✅ Yes, definitely!', '✅ It is certain.', '✅ Without a doubt.',
+  '✅ Most likely.', '✅ Signs point to yes.', '❓ Ask again later.',
+  '❓ Cannot predict now.', '❓ Better not tell you now.',
+  '❌ Don\'t count on it.', '❌ My sources say no.',
+  '❌ Very doubtful.', '❌ Outlook not so good.'
 ];
 
 module.exports = {
@@ -28,9 +21,10 @@ module.exports = {
   },
 
   async executePrefix(message, args) {
+    if (!args[0] || args[0] === 'help') {
+      return message.reply('📖 **Syntax:** `!8ball <question>`\n**Example:** `!8ball Will I win?`');
+    }
     const question = args.join(' ');
-    if (!question) return message.reply('Please ask a question! e.g. `!8ball will I win?`');
-
     const response = responses[Math.floor(Math.random() * responses.length)];
     await message.reply(`🎱 **Question:** ${question}\n**Answer:** ${response}`);
   }
