@@ -26,5 +26,26 @@ module.exports = {
       moderator: interaction.member,
       reason
     });
+  },
+
+  async executePrefix(message, args) {
+    if (!message.member.permissions.has(PermissionFlagsBits.KickMembers)) {
+      return message.reply('No permission.');
+    }
+
+    const user = message.mentions.users.first();
+    if (!user) return message.reply('Please mention a user to warn.');
+
+    const reason = args.slice(1).join(' ') || 'No reason provided';
+
+    db.addWarn(user.id, reason);
+    await message.reply(`<@${user.id}> has been warned. Reason: ${reason}`);
+
+    await sendLog(message.guild, {
+      action: 'WARN',
+      target: user,
+      moderator: message.member,
+      reason
+    });
   }
 };

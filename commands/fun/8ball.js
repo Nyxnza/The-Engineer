@@ -24,7 +24,14 @@ module.exports = {
   async execute(interaction) {
     const question = interaction.options.getString('question');
     const response = responses[Math.floor(Math.random() * responses.length)];
-
     await interaction.reply(`🎱 **Question:** ${question}\n**Answer:** ${response}`);
+  },
+
+  async executePrefix(message, args) {
+    const question = args.join(' ');
+    if (!question) return message.reply('Please ask a question! e.g. `!8ball will I win?`');
+
+    const response = responses[Math.floor(Math.random() * responses.length)];
+    await message.reply(`🎱 **Question:** ${question}\n**Answer:** ${response}`);
   }
 };

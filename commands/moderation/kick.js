@@ -25,5 +25,26 @@ module.exports = {
       moderator: interaction.member,
       reason
     });
+  },
+
+  async executePrefix(message, args) {
+    if (!message.member.permissions.has(PermissionFlagsBits.KickMembers)) {
+      return message.reply('No permission.');
+    }
+
+    const member = message.mentions.members.first();
+    if (!member) return message.reply('Please mention a user to kick.');
+
+    const reason = args.slice(1).join(' ') || 'No reason provided';
+
+    await member.kick(reason);
+    await message.reply(`<@${member.id}> has been kicked. Reason: ${reason}`);
+
+    await sendLog(message.guild, {
+      action: 'KICK',
+      target: member,
+      moderator: message.member,
+      reason
+    });
   }
 };
