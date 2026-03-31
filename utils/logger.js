@@ -2,20 +2,19 @@ const { EmbedBuilder } = require('discord.js');
 const config = require('../config.json');
 
 async function sendLog(guild, { action, target, moderator, reason, duration }) {
-  const logChannel = guild.channels.cache.find(c => c.name === config.logChannelName);
-  
+  const logChannel = guild.channels.cache.get(config.logChannelId);
+
   if (!logChannel) {
-    console.log(`[LOG ERROR] Could not find channel: "${config.logChannelName}"`);
-    console.log(`[LOG ERROR] Available channels: ${guild.channels.cache.map(c => c.name).join(', ')}`);
+    console.log(`[LOG ERROR] Could not find channel with ID: "${config.logChannelId}"`);
     return;
   }
 
   const colors = {
     BAN: 'Red',
     KICK: 'Orange',
-    SLIME: 'Yellow',     // ✅ replaced MUTE
+    MUTE: 'Yellow',
     WARN: 'Blue',
-    UNSLIME: 'Green',    // ✅ replaced UNMUTE
+    UNMUTE: 'Green',
     PURGE: 'Purple'
   };
 
@@ -29,13 +28,7 @@ async function sendLog(guild, { action, target, moderator, reason, duration }) {
     .setColor(colors[action] || 'Grey')
     .setTimestamp();
 
-  if (duration) {
-    embed.addFields({
-      name: 'Duration',
-      value: `${duration}`,
-      inline: true
-    });
-  }
+  if (duration) embed.addFields({ name: 'Duration', value: `${duration} minute(s)`, inline: true });
 
   await logChannel.send({ embeds: [embed] });
 }
