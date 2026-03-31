@@ -29,7 +29,11 @@ for (const folder of commandFolders) {
 const eventFiles = fs.readdirSync('./events').filter(f => f.endsWith('.js'));
 for (const file of eventFiles) {
   const event = require(`./events/${file}`);
-  client.on(event.name, (...args) => event.execute(...args, client));
+  if (event.once) {
+    client.once(event.name, (...args) => event.execute(...args, client));
+  } else {
+    client.on(event.name, (...args) => event.execute(...args, client));
+  }
 }
 
 client.login(process.env.TOKEN);
