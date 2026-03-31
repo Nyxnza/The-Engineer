@@ -15,7 +15,7 @@ module.exports = {
     }
     const user = interaction.options.getUser('user');
     const reason = interaction.options.getString('reason') || 'No reason provided';
-    db.addWarn(user.id, reason);
+    await db.addWarn(user.id, reason);
     await interaction.reply(`<@${user.id}> has been warned. Reason: ${reason}`);
     await sendLog(interaction.guild, {
       action: 'WARN',

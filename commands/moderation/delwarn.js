@@ -44,7 +44,7 @@ module.exports = {
     const number = parseInt(args[1]);
     if (!number) return message.reply('❌ Provide warning number.');
 
-    const success = db.removeWarn(member.id, number - 1);
+    const success = await db.removeWarn(user.id, number - 1);
 
     if (!success) {
       return message.reply('❌ Invalid warning number.');

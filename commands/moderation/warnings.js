@@ -12,7 +12,7 @@ module.exports = {
       return interaction.reply({ content: "No permission", ephemeral: true });
     }
     const user = interaction.options.getUser('user');
-    const warns = db.getWarns(user.id);
+    const warns = await db.getWarns(user.id);
 
     const embed = buildWarningsEmbed(user.tag, user.id, warns);
     await interaction.reply({ embeds: [embed] });

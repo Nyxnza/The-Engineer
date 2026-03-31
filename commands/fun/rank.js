@@ -32,7 +32,7 @@ function buildRankEmbed(user, userData) {
     .addFields(
       { name: 'Tier', value: currentLevel === 0 ? 'Unranked' : `Tier ${currentLevel}`, inline: true },
       { name: 'XP', value: `${userData.xp} XP`, inline: true },
-      { name: 'Next Level', value: label, inline: true },
+      { name: 'Next Tier', value: label, inline: true },
       { name: 'Progress', value: `${bar} ${progress}%`, inline: false }
     )
     .setTimestamp();
@@ -46,13 +46,13 @@ module.exports = {
 
   async execute(interaction) {
     const user = interaction.options.getUser('user') || interaction.user;
-    const userData = db.getUser(user.id);
+    const userData = await db.getUser(user.id);
     await interaction.reply({ embeds: [buildRankEmbed(user, userData)] });
   },
 
   async executePrefix(message, args) {
     const user = message.mentions.users.first() || message.author;
-    const userData = db.getUser(user.id);
+    const userData = await db.getUser(user.id);
     await message.reply({ embeds: [buildRankEmbed(user, userData)] });
   }
 };

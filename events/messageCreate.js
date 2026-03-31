@@ -20,19 +20,16 @@ module.exports = {
 
     const userId = message.author.id;
 
-    // XP & leveling
+    // XP & message counting
     if (!cooldowns.has(userId)) {
-      const xp = Math.floor(Math.random() * 11) + 10; // 10-20 XP
-      const userData = db.addXP(userId, xp);
+      const xp = Math.floor(Math.random() * 11) + 10;
+      const userData = await db.addXP(userId, xp);
       const newLevel = db.checkLevel(userData.xp);
 
       if (newLevel > (userData.level || 0)) {
-        // Update stored level
-        const allData = db.load(db.paths.alltime);
-        allData[userId].level = newLevel;
-        db.save(db.paths.alltime, allData);
+        userData.level = newLevel;
+        await userData.save();
 
-        // Assign role
         const member = message.guild.members.cache.get(userId);
         if (member) {
           const roleName = LEVEL_ROLES[newLevel];
@@ -44,20 +41,12 @@ module.exports = {
         }
       }
 
-      // Message counts for leaderboard
-      db.addMessageCount(userId, db.paths.daily);
-      db.addMessageCount(userId, db.paths.weekly);
-      db.addMessageCount(userId, db.paths.monthly);
-
-      // XP cooldown (1 message per 10 seconds counts for XP)
       cooldowns.add(userId);
       setTimeout(() => cooldowns.delete(userId), 10000);
-    } else {
-      // Still count messages even during XP cooldown
-      db.addMessageCount(userId, db.paths.daily);
-      db.addMessageCount(userId, db.paths.weekly);
-      db.addMessageCount(userId, db.paths.monthly);
     }
+
+    // Always count messages
+    await db.addMessageCount(userId);
 
     // Prefix commands
     if (!message.content?.startsWith(PREFIX)) return;

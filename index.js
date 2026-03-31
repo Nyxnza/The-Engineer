@@ -1,6 +1,7 @@
 require('dotenv').config();
 const fs = require('fs');
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const { connect } = require('./utils/db');
 
 const client = new Client({
   intents: [
@@ -14,11 +15,13 @@ const client = new Client({
 
 client.commands = new Collection();
 
+// Connect to MongoDB first
+connect();
+
 // Load commands
 const commandFolders = fs.readdirSync('./commands');
 for (const folder of commandFolders) {
   const files = fs.readdirSync(`./commands/${folder}`).filter(f => f.endsWith('.js'));
-
   for (const file of files) {
     const command = require(`./commands/${folder}/${file}`);
     client.commands.set(command.data.name, command);
