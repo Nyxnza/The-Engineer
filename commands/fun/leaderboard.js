@@ -3,6 +3,53 @@ const db = require('../../utils/levelSystem');
 
 const VALID_TYPES = ['daily', 'weekly', 'monthly', 'alltime'];
 
+function getNextMidnight() {
+  const now = new Date();
+  const midnight = new Date();
+  midnight.setHours(24, 0, 0, 0);
+  const diff = midnight - now;
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+  return `${hours}h ${minutes}m ${seconds}s`;
+}
+
+function getNextSunday() {
+  const now = new Date();
+  const daysUntilSunday = (7 - now.getDay()) % 7 || 7;
+  const sunday = new Date(now);
+  sunday.setDate(now.getDate() + daysUntilSunday);
+  sunday.setHours(0, 0, 0, 0);
+  const diff = sunday - now;
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  return `${days}d ${hours}h ${minutes}m`;
+}
+
+function getNextMonth() {
+  const now = new Date();
+  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const diff = nextMonth - now;
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  return `${days}d ${hours}h ${minutes}m`;
+}
+
+function getResetTimer(type) {
+  if (type === 'daily') return `⏰ Resets in: **${getNextMidnight()}**`;
+  if (type === 'weekly') return `⏰ Resets in: **${getNextSunday()}**`;
+  if (type === 'monthly') return `⏰ Resets in: **${getNextMonth()}**`;
+  return null;
+}
+
 async function buildLeaderboard(type, guild) {
   let data;
   let title;
@@ -37,8 +84,12 @@ async function buildLeaderboard(type, guild) {
     .setColor('Gold')
     .setTimestamp();
 
+  // Add reset timer for daily/weekly/monthly
+  const timer = getResetTimer(type);
+  if (timer) embed.setFooter({ text: timer.replace('⏰ Resets in: **', '').replace('**', '') });
+
   if (data.length === 0) {
-    embed.setDescription('No data yet!');
+    embed.setDescription(timer ? `${timer}\n\nNo data yet!` : 'No data yet!');
     return embed;
   }
 
@@ -54,7 +105,9 @@ async function buildLeaderboard(type, guild) {
     return `${medal} ${name} — ${label}`;
   }));
 
-  embed.setDescription(lines.join('\n'));
+  const description = timer ? `${timer}\n\n${lines.join('\n')}` : lines.join('\n');
+  embed.setDescription(description);
+
   return embed;
 }
 
