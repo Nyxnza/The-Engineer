@@ -46,15 +46,16 @@ function resetMessageCounts(filePath) {
 }
 
 function xpForLevel(level) {
-  const thresholds = { 1: 100, 5: 500, 15: 1500, 30: 3000 };
+  const thresholds = { 1: 2000, 2: 5000, 3: 10000, 4: 20000, 5: 50000 };
   return thresholds[level] || null;
 }
 
 function checkLevel(xp) {
-  if (xp >= 3000) return 30;
-  if (xp >= 1500) return 15;
-  if (xp >= 500) return 5;
-  if (xp >= 100) return 1;
+  if (xp >= 50000) return 5;
+  if (xp >= 20000) return 4;
+  if (xp >= 10000) return 3;
+  if (xp >= 5000) return 2;
+  if (xp >= 2000) return 1;
   return 0;
 }
 

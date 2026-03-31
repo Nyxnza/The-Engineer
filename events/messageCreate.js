@@ -3,10 +3,11 @@ const ALIASES = { 'h': 'help', 'lb': 'leaderboard' };
 const db = require('../utils/levelSystem');
 
 const LEVEL_ROLES = {
-  1: 'Lv. 1',
-  5: 'Lv. 5',
-  15: 'Lv. 15',
-  30: 'Lv. 30'
+  1: 'Tier 1',
+  2: 'Tier 2',
+  3: 'Tier 3',
+  4: 'Tier 4',
+  5: 'Tier 5'
 };
 
 const cooldowns = new Set();
