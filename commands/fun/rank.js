@@ -2,21 +2,22 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const db = require('../../utils/levelSystem');
 
 const LEVEL_THRESHOLDS = [
-  { level: 30, xp: 3000 },
-  { level: 15, xp: 1500 },
-  { level: 5, xp: 500 },
-  { level: 1, xp: 100 },
+  { level: 5, xp: 50000 },
+  { level: 4, xp: 20000 },
+  { level: 3, xp: 10000 },
+  { level: 2, xp: 5000 },
+  { level: 1, xp: 2000 },
 ];
 
 function getNextThreshold(xp) {
   for (const t of LEVEL_THRESHOLDS) {
     if (xp < t.xp) continue;
     const idx = LEVEL_THRESHOLDS.indexOf(t);
-    if (idx === 0) return { next: t.xp, label: `Lv. ${t.level} (MAX)` };
+    if (idx === 0) return { next: t.xp, label: `Tier ${t.level} (MAX)` };
     const next = LEVEL_THRESHOLDS[idx - 1];
-    return { next: next.xp, label: `Lv. ${next.level}` };
+    return { next: next.xp, label: `Tier ${next.level}` };
   }
-  return { next: 100, label: 'Lv. 1' };
+  return { next: 2000, label: 'Tier 1' };
 }
 
 function buildRankEmbed(user, userData) {
