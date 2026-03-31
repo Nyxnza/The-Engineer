@@ -20,10 +20,10 @@ module.exports = {
     .setName('slime')
     .setDescription('Slime a user')
     .addUserOption(opt =>
-    opt.setName('user')
-    .setDescription('User to slime') // ✅ REQUIRED
-    .setRequired(true)
-)
+      opt.setName('user')
+        .setDescription('User to slime')
+        .setRequired(true)
+    )
     .addStringOption(opt =>
       opt.setName('duration')
         .setDescription('Example: 10s, 5m, 2h')
@@ -37,6 +37,12 @@ module.exports = {
     }
 
     const member = interaction.options.getMember('user');
+
+    // Role hierarchy check
+    if (member.roles.highest.position >= interaction.member.roles.highest.position) {
+      return interaction.reply({ content: "❌ You can't slime someone with an equal or higher role than you.", ephemeral: true });
+    }
+
     const durationInput = interaction.options.getString('duration');
     const reason = interaction.options.getString('reason') || 'No reason provided';
 
@@ -49,7 +55,6 @@ module.exports = {
     if (!role) return interaction.reply({ content: "Role not found.", ephemeral: true });
 
     await member.roles.add(role);
-
     await interaction.reply(`${member} has been slimed by ${interaction.member}`);
 
     await sendLog(interaction.guild, {
@@ -62,7 +67,6 @@ module.exports = {
 
     setTimeout(async () => {
       await member.roles.remove(role);
-
       await sendLog(interaction.guild, {
         action: 'UNSLIME',
         target: member,
@@ -84,6 +88,11 @@ module.exports = {
     const member = message.mentions.members.first();
     if (!member) return message.reply('❌ Mention a user.');
 
+    // Role hierarchy check
+    if (member.roles.highest.position >= message.member.roles.highest.position) {
+      return message.reply("❌ You can't slime someone with an equal or higher role than you.");
+    }
+
     const durationInput = args[1];
     const durationMs = parseDuration(durationInput);
 
@@ -97,7 +106,6 @@ module.exports = {
     if (!role) return message.reply('Role not found.');
 
     await member.roles.add(role);
-
     await message.reply(`${member} has been slimed by ${message.author}`);
 
     await sendLog(message.guild, {
@@ -110,7 +118,6 @@ module.exports = {
 
     setTimeout(async () => {
       await member.roles.remove(role);
-
       await sendLog(message.guild, {
         action: 'UNSLIME',
         target: member,
