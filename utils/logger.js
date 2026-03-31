@@ -13,11 +13,12 @@ async function sendLog(guild, { action, target, moderator, reason, duration }) {
   const colors = {
     BAN: 'Red',
     KICK: 'Orange',
-    MUTE: 'Yellow',
+    SLIME: 'Yellow',     // ✅ replaced MUTE
     WARN: 'Blue',
-    UNMUTE: 'Green',
+    UNSLIME: 'Green',    // ✅ replaced UNMUTE
     PURGE: 'Purple'
-};
+  };
+
   const embed = new EmbedBuilder()
     .setTitle(`🔨 ${action}`)
     .addFields(
@@ -28,7 +29,13 @@ async function sendLog(guild, { action, target, moderator, reason, duration }) {
     .setColor(colors[action] || 'Grey')
     .setTimestamp();
 
-  if (duration) embed.addFields({ name: 'Duration', value: `${duration} minute(s)`, inline: true });
+  if (duration) {
+    embed.addFields({
+      name: 'Duration',
+      value: `${duration}`,
+      inline: true
+    });
+  }
 
   await logChannel.send({ embeds: [embed] });
 }
