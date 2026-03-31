@@ -16,6 +16,8 @@ const helpEmbed = () => new EmbedBuilder()
         '`!warnings @user` / `/warnings` — View all warnings for a user',
         '`!delwarn @user <number>` / `/delwarn` — Delete a specific warning by number',
         '`!purge <amount>` / `/purge` — Bulk delete messages (1-100)',
+        '`!rank [@user]` / `/rank` — Check your XP and level progress',
+        '`!lb [daily|weekly|monthly|alltime]` / `/leaderboard` — Show the message leaderboard',
       ].join('\n'),
       inline: false
     },
