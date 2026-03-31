@@ -29,7 +29,7 @@ function buildRankEmbed(user, userData) {
     .setTitle(`📊 Rank — ${user.username}`)
     .setColor('Blurple')
     .addFields(
-      { name: 'Level', value: currentLevel === 0 ? 'Unranked' : `Lv. ${currentLevel}`, inline: true },
+      { name: 'Tier', value: currentLevel === 0 ? 'Unranked' : `Tier ${currentLevel}`, inline: true },
       { name: 'XP', value: `${userData.xp} XP`, inline: true },
       { name: 'Next Level', value: label, inline: true },
       { name: 'Progress', value: `${bar} ${progress}%`, inline: false }
