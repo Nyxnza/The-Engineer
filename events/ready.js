@@ -1,11 +1,25 @@
 const db = require('../utils/levelSystem');
 const TOP_TEXTER_ROLE = '#1 Texter of The Day';
+const MEMBER_COUNT_CHANNEL_ID = '1488126508529877133';
 
 function getMsUntilMidnight() {
   const now = new Date();
   const midnight = new Date();
   midnight.setHours(24, 0, 0, 0);
   return midnight - now;
+}
+
+async function updateMemberCount(client) {
+  for (const guild of client.guilds.cache.values()) {
+    try {
+      const channel = guild.channels.cache.get(MEMBER_COUNT_CHANNEL_ID);
+      if (!channel) continue;
+      const count = guild.memberCount;
+      await channel.setName(`all-members-${count}`);
+    } catch (err) {
+      console.error('[MEMBER COUNT ERROR]', err);
+    }
+  }
 }
 
 async function runDailyReset(client) {
@@ -50,9 +64,16 @@ async function runDailyReset(client) {
 module.exports = {
   name: 'ready',
   once: true,
-  execute(client) {
+  async execute(client) {
     console.log(`Logged in as ${client.user.tag}`);
 
+    // Update member count immediately on startup
+    await updateMemberCount(client);
+
+    // Update member count every 10 minutes
+    setInterval(() => updateMemberCount(client), 10 * 60 * 1000);
+
+    // Daily reset timer
     const msUntilMidnight = getMsUntilMidnight();
     console.log(`[RESET] Next reset in ${Math.round(msUntilMidnight / 1000 / 60)} minutes.`);
 
